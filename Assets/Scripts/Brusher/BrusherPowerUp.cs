@@ -30,13 +30,13 @@ public class  BrusherPowerUp : Brusher
             var obj = GetComponent<BrusherRotation>()._rotationObject[0];
             var pos = obj.localPosition;
             Vector3 newpos = new Vector3(0, 0, 0);
-            newpos.x = (BrusherRotation.isSwitched ? 1 : -1) * 6.3f + pos.x;
+            newpos.x = (BrusherRotation.isSwitched ? 1 : -1) * distance + pos.x;
 
             var Seq = DOTween.Sequence();
             Seq.Append(transform.GetChild(1).DOLocalMoveX(newpos.x, AnimationDuration));
-            newpos.x = (BrusherRotation.isSwitched ? 1 : -1) * 3.2f + pos.x;
+            newpos.x = (BrusherRotation.isSwitched ? 1 : -1) * distance/2 + pos.x;
             Seq.Join(transform.GetChild(2).DOLocalMoveX(newpos.x, AnimationDuration));
-            Seq.Join(transform.GetChild(2).DOScaleZ(190, AnimationDuration));
+            Seq.Join(transform.GetChild(2).DOScaleZ(200, AnimationDuration));
             AnimationNow = true;
             StartCoroutine(Anim(false));
         }

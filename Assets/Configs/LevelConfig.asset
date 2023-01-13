@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8317024fc09a5394c90fd8819c114442, type: 3}
+  m_Name: LevelConfig
+  m_EditorClassIdentifier: 
+  CapsuleColors:
+  - {r: 0.3301887, g: 0.18845674, b: 0.18845674, a: 0}
+  - {r: 0.2964116, g: 0.5377358, b: 0.20038268, a: 0}
+  PlatformColors:
+  - {r: 0.43137258, g: 0.17254902, b: 0.19215688, a: 0}
+  CrossParticles:
+  - {fileID: 1707671963811239795, guid: 0740f92727a995046bb7b3cbb8a4e001, type: 3}

@@ -1,10 +1,9 @@
 fileFormatVersion: 2
-guid: 037f37105b524ad4fa3046f010ae617e
+guid: d5d95604b0e4ff84ba012c57808f0e4e
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences:
-  - _flyParticle: {fileID: 1707671963811239795, guid: 0740f92727a995046bb7b3cbb8a4e001, type: 3}
+  defaultReferences: []
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

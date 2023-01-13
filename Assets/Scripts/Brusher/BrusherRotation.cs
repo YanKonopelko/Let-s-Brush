@@ -12,7 +12,7 @@ public class BrusherRotation : Brusher
     {
         AnimationNow = true;
         isSwitched = true;
-        distance = 6.3f;
+        distance = 6.4f;
         _camera = Camera.main.gameObject;
         _camera.GetComponent<CameraController>().player = _rotationObject[0];
 

@@ -4751,7 +4751,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5592737972b8da44a8ee6690d75a7fd5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  color: {r: 0.65882355, g: 0.14509805, b: 0.14509805, a: 1}
 --- !u!1 &1187482455575375047
 GameObject:
   m_ObjectHideFlags: 0
@@ -9504,7 +9503,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5592737972b8da44a8ee6690d75a7fd5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  color: {r: 0.6603774, g: 0.14640442, b: 0.14640442, a: 1}
 --- !u!1 &5524304817936293184
 GameObject:
   m_ObjectHideFlags: 0
@@ -9519,7 +9517,6 @@ GameObject:
   - component: {fileID: 5524304817936293181}
   - component: {fileID: 5524304817936293186}
   - component: {fileID: 5524304817936293187}
-  - component: {fileID: 4464609648184278266}
   m_Layer: 0
   m_Name: Capsule
   m_TagString: Capsule
@@ -9619,7 +9616,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2eb6c67150f00fd4fbc3689ae4c85dea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _particle: {fileID: 1187482455561188775}
+  crossPrefab: {fileID: 4193405724698908073, guid: d8961de891073a64c98e201d61f3be37, type: 3}
 --- !u!111 &5524304817936293187
 Animation:
   m_ObjectHideFlags: 0
@@ -9636,20 +9633,6 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
---- !u!114 &4464609648184278266
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5524304817936293184}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c4f33df98eab014abbd3dc88f58c1f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _crossObject: {fileID: 4193405724698908073, guid: d8961de891073a64c98e201d61f3be37, type: 3}
-  _enabled: 0
 --- !u!1 &9050826916914610125
 GameObject:
   m_ObjectHideFlags: 0

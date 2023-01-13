@@ -2,8 +2,23 @@ using UnityEngine;
 using System.Collections;
 public class CrossClass : MonoBehaviour
 {
-    private bool isDestroy = false;
+    private bool isDestroy;
     [SerializeField] private ParticleSystem _flyParticle;
+
+    private void OnEnable()
+    {
+        LevelManager.onParamsChange += ChangeParticle;
+    }
+
+    private void OnDisable()
+    {
+        LevelManager.onParamsChange -= ChangeParticle;
+    }
+
+    private void ChangeParticle()
+    {
+        _flyParticle = LevelManager.instance.CrossParticle;
+    }
     private void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag("Capsule") && !isDestroy)
