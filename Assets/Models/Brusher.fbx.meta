@@ -1,9 +1,19 @@
 fileFormatVersion: 2
 guid: 669765ed9c4805a44922605d4d992580
 ModelImporter:
-  serializedVersion: 21202
+  serializedVersion: 21300
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: CenterCirc
+    second: {fileID: 2100000, guid: d9b73692fcf099f45b96157d30461c2c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: OuterCirc
+    second: {fileID: 2100000, guid: 58515af843f2cdf48bf5a18534841bd3, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -99,6 +109,7 @@ ModelImporter:
   humanoidOversampling: 1
   avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

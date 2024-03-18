@@ -25,7 +25,7 @@ public class LevelManager : MonoBehaviour
         CapsuleColor = config.GetCapsuleColors();
         PlatfomColor = config.GetPlatformColors();
         CrossParticle = config.GetCrossParticles();
-        onParamsChange.Invoke();
+        onParamsChange?.Invoke();
     }
     
 }

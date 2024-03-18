@@ -15,7 +15,7 @@ public class CrossSpawner : MonoBehaviour
             cross.GetComponent<Animation>().Play("CrossAnimation 2");
             cross = Instantiate(CrossPrefab, transform.position, Quaternion.identity);
             cross.GetComponent<Animation>().Play("CrossAnimation 3");
-            Destroy(GetComponent<CrossSpawner>());
+            Destroy(this);
         } 
     }
 }

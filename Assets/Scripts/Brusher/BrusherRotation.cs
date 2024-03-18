@@ -8,6 +8,9 @@ public class BrusherRotation : Brusher
     static public bool isSwitched = true;
     private GameObject _camera; 
     public Transform[] _rotationObject; 
+
+    [SerializeField] public Vector2 localPoses;
+    private Vector3 direction = Vector3.up;
     private void Start()
     {
         AnimationNow = true;
@@ -20,12 +23,13 @@ public class BrusherRotation : Brusher
 
     private void ChangeDirection()
     {
+        if(AnimationNow) return;
         isSwitched = !isSwitched;
 
         var pos = _rotationObject[0].localPosition;
         Vector3 newPos = new Vector3()
         {
-            x = (isSwitched ? -1 : 1) * distance + pos.x
+            x = (isSwitched ? -1 : 1) * Brusher.distance + pos.x
         };
         _rotationObject[0].localPosition = newPos;
         _rotationObject[1].localPosition = pos;
@@ -43,6 +47,6 @@ public class BrusherRotation : Brusher
         {
             ChangeDirection();
         }
-        transform.RotateAround(_rotationObject[0].position, Vector3.up * (isSwitched?1:-1), _rotationSpeed * Time.deltaTime);
+        transform.RotateAround(_rotationObject[0].position, direction * (isSwitched?1:-1), _rotationSpeed * Time.deltaTime);
     }
 }

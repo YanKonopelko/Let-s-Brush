@@ -27,17 +27,22 @@ public class  BrusherPowerUp : Brusher
 
         if (!AnimationNow)
         {
+            distance = 6.4f;
+            AnimationNow = true;
             var obj = GetComponent<BrusherRotation>()._rotationObject[0];
             var pos = obj.localPosition;
-            Vector3 newpos = new Vector3(0, 0, 0);
-            newpos.x = (BrusherRotation.isSwitched ? 1 : -1) * distance + pos.x;
+            Vector3 pos1 = new Vector3(0, 0, 0);
+            pos1.x = (BrusherRotation.isSwitched ? 1 : -1) * distance + pos.x;
 
             var Seq = DOTween.Sequence();
-            Seq.Append(transform.GetChild(1).DOLocalMoveX(newpos.x, AnimationDuration));
+            Seq.Append(transform.GetChild(1).DOLocalMoveX(pos1.x, AnimationDuration));
+            Vector3 newpos = new Vector3(0, 0, 0);
             newpos.x = (BrusherRotation.isSwitched ? 1 : -1) * distance/2 + pos.x;
             Seq.Join(transform.GetChild(2).DOLocalMoveX(newpos.x, AnimationDuration));
             Seq.Join(transform.GetChild(2).DOScaleZ(200, AnimationDuration));
-            AnimationNow = true;
+
+
+       
             StartCoroutine(Anim(false));
         }
     }
@@ -45,11 +50,12 @@ public class  BrusherPowerUp : Brusher
     {
         if (!AnimationNow)
         {
+            distance = 10.3f;
+            AnimationNow = true;
             var Seq = DOTween.Sequence();
             Seq.Append(transform.GetChild(1).DOLocalMoveX(BrusherRotation.isSwitched ? 10.3f : -4.3f, AnimationDuration));
             Seq.Join(transform.GetChild(2).DOLocalMoveX(BrusherRotation.isSwitched ? 5.2f : 1.2f, AnimationDuration));
             Seq.Join(transform.GetChild(2).DOScaleZ(400, AnimationDuration));
-            AnimationNow = true;
             StartCoroutine(Anim(true));
             StartCoroutine(BrusherDown());
         }
@@ -57,10 +63,6 @@ public class  BrusherPowerUp : Brusher
     IEnumerator Anim(bool brusherIsUp)
     {
         yield return new WaitForSeconds(AnimationDuration);
-        if(brusherIsUp)
-            distance = 10.3f;
-        else
-            distance = 6.3f;
         AnimationNow = false;
     }
     public void TurnOnCrosses()

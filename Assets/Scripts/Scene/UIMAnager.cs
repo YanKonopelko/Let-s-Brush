@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
-public class UIMAnager : MonoBehaviour
+public class UIManager : MonoBehaviour
 {
     private float fill = 0;
     private float _amountOfCapsules;
@@ -12,16 +12,16 @@ public class UIMAnager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI nextLevel;
     private void Start()
     {
-        _amountOfCapsules = GetComponent<ScenesManager>()._capsulesAmount;
+        _amountOfCapsules = CapsuleManager.Instance._capsulesAmount;
         currentLevel.text = SceneManager.GetActiveScene().buildIndex.ToString();
         nextLevel.text = (SceneManager.GetActiveScene().buildIndex+1).ToString();
     }
 
     private void Update()
     {
-        if (GetComponent<ScenesManager>()._capsulesCounter>0)
+        if (CapsuleManager.Instance._capsulesCounter>0)
         {
-            fill = GetComponent<ScenesManager>()._capsulesCounter / _amountOfCapsules;
+            fill = CapsuleManager.Instance._capsulesCounter / _amountOfCapsules;
         }
         _progressBar.fillAmount = fill;
     }

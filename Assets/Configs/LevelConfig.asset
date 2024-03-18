@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: LevelConfig
   m_EditorClassIdentifier: 
   CapsuleColors:
-  - {r: 0.3301887, g: 0.18845674, b: 0.18845674, a: 0}
-  - {r: 0.2964116, g: 0.5377358, b: 0.20038268, a: 0}
+  - {r: 0.8679245, g: 0.8517574, b: 0, a: 1}
+  - {r: 0, g: 0.7670292, b: 0.7830189, a: 1}
   PlatformColors:
-  - {r: 0.43137258, g: 0.17254902, b: 0.19215688, a: 0}
+  - {r: 0.43137258, g: 0.17254902, b: 0.19215688, a: 1}
   CrossParticles:
   - {fileID: 1707671963811239795, guid: 0740f92727a995046bb7b3cbb8a4e001, type: 3}
