@@ -13,7 +13,7 @@ public class  BrusherPowerUp : Brusher
         var newColor = new Color(255f / 255f, 255f / 255f, 255f / 255f);
         _crosses[_pickedCrosses].color = newColor;
         _pickedCrosses += 1;
-        if(_pickedCrosses == 3)
+        if(_pickedCrosses >= 3)
         {
             Destroy(_crosses[0]);
             Destroy(_crosses[1]);
