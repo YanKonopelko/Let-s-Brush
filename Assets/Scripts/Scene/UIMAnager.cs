@@ -29,7 +29,12 @@ public class UIManager : MonoBehaviour
     public void StartGame()
     {
         Brusher.AnimationNow = false;
-        GameObject.Find("Brusher").GetComponent<BrusherStartChanger>().GetDown();
-        Destroy(_startPanel);
+        _startPanel.SetActive(false);
     }
+
+    public void Reload(){
+        _startPanel.SetActive(true);
+    
+    }   
+
 }

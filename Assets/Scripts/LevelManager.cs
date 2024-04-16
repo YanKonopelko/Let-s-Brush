@@ -8,6 +8,11 @@ public class LevelManager : MonoBehaviour
     public ParticleSystem CrossParticle;
     [SerializeField] private LevelConfig config;
     public static Action onParamsChange;
+
+    public static CapsuleManager CapsuleManager;
+    public static UIManager UIManager;
+    // public static UIManager UIManager;
+
     void Awake()
     {
         if (instance == null)
@@ -22,10 +27,15 @@ public class LevelManager : MonoBehaviour
 
     public void SetParams()
     {
-        CapsuleColor = config.GetCapsuleColors();
+        // CapsuleColor = config.GetCapsuleColors();
         PlatfomColor = config.GetPlatformColors();
         CrossParticle = config.GetCrossParticles();
         onParamsChange?.Invoke();
+    }
+    
+    public void Reload(){
+        CapsuleManager.Reload();
+        UIManager.Reload();
     }
     
 }
