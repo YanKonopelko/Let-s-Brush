@@ -81,6 +81,7 @@ public class CapsuleManager : MonoBehaviour
                 if(isColored[i] == false){
                     // Recalculate();
                     ColorCapsule(capsuleRenderers[i]);
+                    Recalculate();
                     isColored[i] = true;
                 }
                 var scale = _allCapsulesTransform[i].localScale;
@@ -141,10 +142,7 @@ public class CapsuleManager : MonoBehaviour
         _capsulesCounter += 1;
         if(_capsulesCounter == _capsulesAmount)
         {
-            GameObject.Find("EndAnimationStarter").GetComponent<EndAnimationStarter>().Follow(GameObject.Find("Brusher").transform.GetChild(0).position);
-            GameObject.Find("EndAnimationStarter").GetComponent<Animation>().Play("EndAnimation");
-            GameObject.Find("Brusher").GetComponent<BrusherEndAnim>().EndAnim();  
-            ScenesManager.Instance.Finish();
+            isFinished = true;
         }
     }
     
