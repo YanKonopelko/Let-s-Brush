@@ -43,10 +43,10 @@ public class CapsuleManager : MonoBehaviour
 
 
 
-    private void Start(){
+    private void Awake(){
         Instance = this;
         _capsules = this.GetComponentsInChildren<CapsuleClass>();
-        _capsulesAmount = _capsules.Length;
+        Instance._capsulesAmount = _capsules.Length;
         isColored = new bool[_capsulesAmount];
         capsuleRenderers = new MeshRenderer[_capsulesAmount];
         var transforms = new Transform[_capsules.Length] ;

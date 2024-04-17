@@ -7,8 +7,8 @@ public class CapsuleSpawner : MonoBehaviour
     [SerializeField] GameObject _capsulePrefab; 
     private BoxCollider _collider;
 
-    [SerializeField] private float distanceFromBorder = 1;
-    [SerializeField] private float distanceBetweenCapsules = 2.5f;
+    // [SerializeField] private float distanceFromBorder = 1;
+    // [SerializeField] private float distanceBetweenCapsules = 2.5f;
 
     // Start is called before the first frame update
     void Awake()

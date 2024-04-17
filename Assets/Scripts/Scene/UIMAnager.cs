@@ -34,7 +34,6 @@ public class UIManager : MonoBehaviour
 
     public void Reload(){
         _startPanel.SetActive(true);
-    
     }   
 
 }

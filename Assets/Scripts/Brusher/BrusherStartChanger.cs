@@ -1,7 +1,7 @@
 using UnityEngine;
 public class BrusherStartChanger : MonoBehaviour
 {
-    private float distance = 10;
+    // private float distance = 10;
 
         public void GetDown()
     {
