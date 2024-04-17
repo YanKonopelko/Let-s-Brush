@@ -19,20 +19,20 @@ public class CrossClass : MonoBehaviour
     {
         _flyParticle = LevelManager.instance.CrossParticle;
     }
-    // private void OnTriggerEnter(Collider other)
-    // {
-    //     if (!other.CompareTag("Capsule") && !isDestroy)
-    //     {
-    //         isDestroy = true;
-    //         StartCoroutine("Fly");
-    //         StartCoroutine("ParticleSpawn");
-    //         GameObject.Find("Brusher").GetComponent<BrusherPowerUp>().PickUp();
-    //     }
-    //     if (other.CompareTag("Roof"))
-    //     {
-    //         Destroy(transform.parent.gameObject);
-    //     }
-    // }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!other.CompareTag("Capsule") && !isDestroy)
+        {
+            isDestroy = true;
+            StartCoroutine("Fly");
+            StartCoroutine("ParticleSpawn");
+            GameObject.Find("Brusher").GetComponent<BrusherPowerUp>().PickUp();
+        }
+        if (other.CompareTag("Roof"))
+        {
+            Destroy(transform.parent.gameObject);
+        }
+    }
     IEnumerator Fly()
     {
         yield return new WaitForSeconds(0.02f);

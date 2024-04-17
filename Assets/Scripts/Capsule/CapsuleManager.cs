@@ -18,7 +18,7 @@ public class CapsuleManager : MonoBehaviour
 
     public static CapsuleManager Instance;
     public float triggerDistance = 0.2f;
-    public Vector2 BrusherStickSize;
+    public BoxCollider BrusherStickSize;
     public float BrusherActivePartRadius;
     public Material TargetColor;
     public int[] CapsulePhases;
@@ -41,7 +41,7 @@ public class CapsuleManager : MonoBehaviour
 
     public Transform endAnimStarter;
 
-
+    private int CrossCapsuleNumber = 0;
 
     private void Awake(){
         Instance = this;
@@ -59,6 +59,10 @@ public class CapsuleManager : MonoBehaviour
         }
         _allCapsulesTransform = transforms;
         startCapsulePos = _allCapsulesTransform[0].position;
+
+        CrossCapsuleNumber = UnityEngine.Random.Range(0, transform.childCount - 1);
+        Debug.Log(CrossCapsuleNumber);
+
     }
 
     public void  Update(){
@@ -79,9 +83,11 @@ public class CapsuleManager : MonoBehaviour
                     continue;
                 }
                 if(isColored[i] == false){
-                    // Recalculate();
                     ColorCapsule(capsuleRenderers[i]);
                     Recalculate();
+                    if(i == CrossCapsuleNumber){
+                        CrossSpawner.SpawnCrossesInPos(_allCapsulesTransform[i].transform);
+                    }
                     isColored[i] = true;
                 }
                 var scale = _allCapsulesTransform[i].localScale;
@@ -149,11 +155,11 @@ public class CapsuleManager : MonoBehaviour
 
      private bool IsNear(Transform transform){
 
-        if((Mathf.Abs(transform.position.x - BrusherStick.position.x ) < (BrusherStickSize.x*Math.Cos(BrusherStick.eulerAngles.y*ANGULAR_COEFFICIENT) +
-        BrusherStickSize.y*Math.Sin(BrusherStick.eulerAngles.y*ANGULAR_COEFFICIENT)/2)
+        if((Mathf.Abs(transform.position.x - BrusherStick.position.x ) < (BrusherStickSize.size.x*BrusherStickSize.transform.localScale.x*Math.Cos(BrusherStick.eulerAngles.y*ANGULAR_COEFFICIENT) +
+        BrusherStickSize.size.z*BrusherStickSize.transform.localScale.z*Math.Sin(BrusherStick.eulerAngles.y*ANGULAR_COEFFICIENT)/2)
          &&
-        (Mathf.Abs(transform.position.z - BrusherStick.position.z ) < BrusherStickSize.x*Math.Sin(BrusherStick.eulerAngles.y*ANGULAR_COEFFICIENT) +
-        BrusherStickSize.y*Math.Cos(BrusherStick.eulerAngles.y*ANGULAR_COEFFICIENT)/2)) ||
+        (Mathf.Abs(transform.position.z - BrusherStick.position.z ) < BrusherStickSize.size.x*BrusherStickSize.transform.localScale.x*Math.Sin(BrusherStick.eulerAngles.y*ANGULAR_COEFFICIENT) +
+        BrusherStickSize.size.z*BrusherStickSize.transform.localScale.z*Math.Cos(BrusherStick.eulerAngles.y*ANGULAR_COEFFICIENT)/2)) ||
         ((Mathf.Abs(transform.position.x - BrusherActivePart.position.x ) < BrusherActivePartRadius*1.2) &&
             Mathf.Abs(transform.position.z - BrusherActivePart.position.z) < BrusherActivePartRadius*1.2))
 

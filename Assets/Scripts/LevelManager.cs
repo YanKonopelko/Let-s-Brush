@@ -6,6 +6,9 @@ public class LevelManager : MonoBehaviour
     public Color[] CapsuleColor;
     public Color PlatfomColor;
     public ParticleSystem CrossParticle;
+
+    public GameObject CrossPrefab;
+
     [SerializeField] private LevelConfig config;
     public static Action onParamsChange;
 
