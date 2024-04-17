@@ -4,6 +4,10 @@ public class LevelManager : MonoBehaviour
 {
     public static LevelManager instance;
     public Color[] CapsuleColor;
+
+    public Material[] CapsuleMaterials;
+
+
     public Color PlatfomColor;
     public ParticleSystem CrossParticle;
 
@@ -12,12 +16,14 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private LevelConfig config;
     public static Action onParamsChange;
 
-    public static CapsuleManager CapsuleManager;
-    public static UIManager UIManager;
+    public CapsuleManager CapsuleManager;
+    public UIManager UIManager;
     // public static UIManager UIManager;
 
     void Awake()
     {
+        CapsuleMaterials[0].color = CapsuleColor[0];
+        CapsuleMaterials[1].color = CapsuleColor[1];
         if (instance == null)
         {
             instance = this;
@@ -26,6 +32,9 @@ public class LevelManager : MonoBehaviour
         else if (instance != this)
             Destroy(gameObject);
         SetParams();
+
+        CapsuleManager.Init();
+        UIManager.Init();
     }
 
     public void SetParams()

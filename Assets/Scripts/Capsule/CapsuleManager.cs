@@ -43,7 +43,11 @@ public class CapsuleManager : MonoBehaviour
 
     private int CrossCapsuleNumber = 0;
 
-    private void Awake(){
+    public BrusherEndAnim brusherEndAnim;
+
+
+    public void Init(){
+        TargetColor = LevelManager.instance.CapsuleMaterials[1];
         Instance = this;
         _capsules = this.GetComponentsInChildren<CapsuleClass>();
         Instance._capsulesAmount = _capsules.Length;
@@ -83,6 +87,7 @@ public class CapsuleManager : MonoBehaviour
                     continue;
                 }
                 if(isColored[i] == false){
+                    _capsules[i].ParticlePlay();
                     ColorCapsule(capsuleRenderers[i]);
                     Recalculate();
                     if(i == CrossCapsuleNumber){
@@ -130,11 +135,9 @@ public class CapsuleManager : MonoBehaviour
                 if(position.y >= capsuleFlightHight){
                     position.y = capsuleFlightHight;
                     CapsulePhases[i]= 4;
-                    // Debug.Log("jopa");
                 }
                 else if(position.y < startCapsulePos.y){
                     position.y = startCapsulePos.y;
-                    // CapsulePhases[i] = 0;
                 }
                 _allCapsulesTransform[i].position = position;
             }
@@ -148,6 +151,7 @@ public class CapsuleManager : MonoBehaviour
         _capsulesCounter += 1;
         if(_capsulesCounter == _capsulesAmount)
         {
+            brusherEndAnim.EndAnim();
             isFinished = true;
         }
     }

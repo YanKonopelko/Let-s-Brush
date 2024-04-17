@@ -10,7 +10,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject _startPanel;
     [SerializeField] private TextMeshProUGUI currentLevel;
     [SerializeField] private TextMeshProUGUI nextLevel;
-    private void Start()
+    public void Init()
     {
         _amountOfCapsules = CapsuleManager.Instance._capsulesAmount;
         currentLevel.text = SceneManager.GetActiveScene().buildIndex.ToString();
