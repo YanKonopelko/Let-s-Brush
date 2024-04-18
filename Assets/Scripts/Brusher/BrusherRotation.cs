@@ -37,6 +37,7 @@ public class BrusherRotation : Brusher
         if (!this.CheckFloorAtThePoint(_rotationObject[0]))
         {
             AnimationNow = true;
+            isSwitched = true;
             LevelManager.instance.Reload();
             // SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }

@@ -158,6 +158,7 @@ public class CapsuleManager : MonoBehaviour
             brusher.EndAnim();
             await Task.Delay(500);
             isFinished = true;
+            LevelManager.instance.Finish();
         }
     }
     
@@ -207,6 +208,7 @@ public class CapsuleManager : MonoBehaviour
         Debug.Log(CrossCapsuleNumber);
         brusher.Reload();
         CrossSpawner.Clear();
+        brusher.ForcedDown();
         isFinished = false;
     }   
 }

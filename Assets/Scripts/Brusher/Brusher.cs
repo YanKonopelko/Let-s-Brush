@@ -58,7 +58,7 @@ public class Brusher : MonoBehaviour
             BrusherUp();
         }
     }
-    IEnumerator BrusherDown()
+    public IEnumerator BrusherDown()
     {
         yield return new WaitForSeconds(_buffDuration);
 
@@ -97,9 +97,9 @@ public class Brusher : MonoBehaviour
             StartCoroutine(BrusherDown());
         }
     }
-    IEnumerator Anim(bool brusherIsUp)
+     IEnumerator Anim(bool brusherIsUp)
     {
-        yield return new WaitForSeconds(AnimationDuration);
+        yield return new WaitForSeconds(AnimationDuration+0.1f);
         AnimationNow = false;
     }
     public void TurnOnCrosses()
@@ -118,5 +118,19 @@ public class Brusher : MonoBehaviour
         _crosses[1].gameObject.SetActive(false);
         _crosses[2].gameObject.SetActive(false);
         transform.position = startPosition;
+    }
+    public void ForcedDown(){
+        StopAllCoroutines();
+        distance = 6.4f;
+        var obj = GetComponent<BrusherRotation>()._rotationObject[0];
+        var pos = obj.localPosition;
+        Vector3 pos1 = transform.GetChild(1).transform.localPosition;
+        pos1.x = (BrusherRotation.isSwitched ? 1 : -1) * distance + pos.x;
+
+        transform.GetChild(1).transform.localPosition = pos1;
+        Vector3 newpos = transform.GetChild(2).localPosition;
+        newpos.x = (BrusherRotation.isSwitched ? 1 : -1) * distance/2 + pos.x;
+        transform.GetChild(2).transform.localPosition = newpos;
+        transform.GetChild(2).transform.localScale = new Vector3(transform.GetChild(2).transform.localScale.x,transform.GetChild(2).transform.localScale.y,200);
     }
 }

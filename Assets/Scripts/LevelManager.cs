@@ -1,5 +1,7 @@
 using UnityEngine;
 using System;
+using System.Collections;
+using UnityEngine.SceneManagement;
 public class LevelManager : MonoBehaviour
 {
     public static LevelManager instance;
@@ -50,4 +52,18 @@ public class LevelManager : MonoBehaviour
         UIManager.Reload();
     }
     
+     private float _finishTime = 2;
+  
+    private IEnumerator FinishScene(float time)
+    {
+        yield return new WaitForSeconds(time);
+        if(SceneManager.GetActiveScene().buildIndex < SceneManager.sceneCount-1)
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex+1);
+        else
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void Finish(){
+        StartCoroutine(FinishScene(_finishTime));
+    }   
 }
