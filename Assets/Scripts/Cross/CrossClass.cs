@@ -21,12 +21,12 @@ public class CrossClass : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareTag("Capsule") && !isDestroy)
+        if (other.CompareTag("Brusher") && !isDestroy)
         {
             isDestroy = true;
             StartCoroutine("Fly");
             StartCoroutine("ParticleSpawn");
-            GameObject.Find("Brusher").GetComponent<BrusherPowerUp>().PickUp();
+            GameObject.Find("Brusher").GetComponent<Brusher>().PickUp();
         }
         if (other.CompareTag("Roof"))
         {

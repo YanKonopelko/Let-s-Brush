@@ -7,7 +7,7 @@ public class CrossSpawner : MonoBehaviour
     public static void SpawnCrossesInPos(Transform pos){
 
         CrossPrefab = LevelManager.instance.CrossPrefab;
-        GameObject.Find("Brusher").GetComponent<BrusherPowerUp>().TurnOnCrosses();
+        GameObject.Find("Brusher").GetComponent<Brusher>().TurnOnCrosses();
         var cross = Instantiate(CrossPrefab,pos.position,Quaternion.identity);
         cross.GetComponent<Animation>().Play("CrossAnimation 1");
         cross = Instantiate(CrossPrefab, pos.position, Quaternion.identity);

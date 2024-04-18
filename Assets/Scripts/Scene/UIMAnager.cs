@@ -29,6 +29,7 @@ public class UIManager : MonoBehaviour
     public void StartGame()
     {
         Brusher.AnimationNow = false;
+        CapsuleManager.Instance.isStarted = true;
         _startPanel.SetActive(false);
     }
 

@@ -34,10 +34,11 @@ public class BrusherRotation : Brusher
         _rotationObject[0].localPosition = newPos;
         _rotationObject[1].localPosition = pos;
         
-        if (!transform.GetComponent<FloorCheker>().CheckFloorAtThePoint(_rotationObject[0]))
+        if (!this.CheckFloorAtThePoint(_rotationObject[0]))
         {
             AnimationNow = true;
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            LevelManager.instance.Reload();
+            // SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }
 

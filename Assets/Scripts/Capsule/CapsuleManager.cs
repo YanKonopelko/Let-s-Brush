@@ -21,6 +21,7 @@ public class CapsuleManager : MonoBehaviour
     public BoxCollider BrusherStickSize;
     public float BrusherActivePartRadius;
     public Material TargetColor;
+    public Material startCapsuleColor;
     public int[] CapsulePhases;
 
     public bool[] isColored;
@@ -43,11 +44,12 @@ public class CapsuleManager : MonoBehaviour
 
     private int CrossCapsuleNumber = 0;
 
-    public BrusherEndAnim brusherEndAnim;
+    public bool isStarted = false;
 
-
+    public Brusher brusher;
     public void Init(){
         TargetColor = LevelManager.instance.CapsuleMaterials[1];
+        startCapsuleColor = LevelManager.instance.CapsuleMaterials[0];
         Instance = this;
         _capsules = this.GetComponentsInChildren<CapsuleClass>();
         Instance._capsulesAmount = _capsules.Length;
@@ -70,6 +72,7 @@ public class CapsuleManager : MonoBehaviour
     }
 
     public void  Update(){
+    if(!isStarted) return;
     if(!isFinished)
     {
             for(int i = 0; i < _allCapsulesTransform.Length;i++){
@@ -88,7 +91,7 @@ public class CapsuleManager : MonoBehaviour
                 }
                 if(isColored[i] == false){
                     _capsules[i].ParticlePlay();
-                    ColorCapsule(capsuleRenderers[i]);
+                    ColorCapsule(capsuleRenderers[i],TargetColor);
                     Recalculate();
                     if(i == CrossCapsuleNumber){
                         CrossSpawner.SpawnCrossesInPos(_allCapsulesTransform[i].transform);
@@ -147,11 +150,12 @@ public class CapsuleManager : MonoBehaviour
 
     }
 
-    public void Recalculate() {
+    public async void Recalculate() {
         _capsulesCounter += 1;
         if(_capsulesCounter == _capsulesAmount)
         {
-            brusherEndAnim.EndAnim();
+            brusher.EndAnim();
+            await Task.Delay(500);
             isFinished = true;
         }
     }
@@ -175,7 +179,7 @@ public class CapsuleManager : MonoBehaviour
 
     private bool IsNearToCircle(Transform transform){
 
-        if(  Math.Sqrt(Math.Pow((endAnimStarter.position.x - transform.position.x),2) + Math.Pow((endAnimStarter.position.z - transform.position.z),2))  <= circleRadius)
+        if(  Math.Sqrt(Math.Pow(endAnimStarter.position.x - transform.position.x,2) + Math.Pow(endAnimStarter.position.z - transform.position.z,2))  <= circleRadius)
         {
             return true;
         }
@@ -183,10 +187,21 @@ public class CapsuleManager : MonoBehaviour
     }
 
 
-    private void ColorCapsule(MeshRenderer mesh){
-        mesh.material = TargetColor;
+    private void ColorCapsule(MeshRenderer mesh,Material mat){
+        mesh.material = mat;
     }
 
     public void Reload(){
+        isStarted = false;
+        _capsulesCounter = 0;
+        for(int i = 0; i < CapsulePhases.Length;i++){
+            CapsulePhases[i] = 0;
+            isColored[i] = false;
+            ColorCapsule(capsuleRenderers[i],startCapsuleColor);
+        }
+        circleRadius = 1;
+        CrossCapsuleNumber = UnityEngine.Random.Range(0, transform.childCount - 1);
+        Debug.Log(CrossCapsuleNumber);
+        brusher.Reload();
     }   
 }
