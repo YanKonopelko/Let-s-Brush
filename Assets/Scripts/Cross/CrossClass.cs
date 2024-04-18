@@ -30,6 +30,7 @@ public class CrossClass : MonoBehaviour
         }
         if (other.CompareTag("Roof"))
         {
+            CrossSpawner.Pop(this.gameObject);
             Destroy(transform.parent.gameObject);
         }
     }

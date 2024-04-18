@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class CapsuleManager : MonoBehaviour
 {
@@ -197,11 +198,15 @@ public class CapsuleManager : MonoBehaviour
         for(int i = 0; i < CapsulePhases.Length;i++){
             CapsulePhases[i] = 0;
             isColored[i] = false;
+            var scale = new Vector3(1,1,1);
+            _allCapsulesTransform[i].transform.localScale = scale;
             ColorCapsule(capsuleRenderers[i],startCapsuleColor);
         }
         circleRadius = 1;
         CrossCapsuleNumber = UnityEngine.Random.Range(0, transform.childCount - 1);
         Debug.Log(CrossCapsuleNumber);
         brusher.Reload();
+        CrossSpawner.Clear();
+        isFinished = false;
     }   
 }
