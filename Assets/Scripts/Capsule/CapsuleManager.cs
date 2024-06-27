@@ -165,10 +165,10 @@ public class CapsuleManager : MonoBehaviour
 
      private bool IsNear(Transform transform){
 
-        if((Mathf.Abs(transform.position.x - BrusherStick.position.x ) < (BrusherStickSize.size.x*BrusherStickSize.transform.localScale.x*Math.Cos(BrusherStick.eulerAngles.y*ANGULAR_COEFFICIENT) +
+        if((Mathf.Abs(transform.position.x - BrusherStick.position.x ) < (BrusherStickSize.size.x*BrusherStickSize.transform.localScale.x*1.3*Math.Cos(BrusherStick.eulerAngles.y*ANGULAR_COEFFICIENT) +
         BrusherStickSize.size.z*BrusherStickSize.transform.localScale.z*Math.Sin(BrusherStick.eulerAngles.y*ANGULAR_COEFFICIENT)/2)
          &&
-        (Mathf.Abs(transform.position.z - BrusherStick.position.z ) < BrusherStickSize.size.x*BrusherStickSize.transform.localScale.x*Math.Sin(BrusherStick.eulerAngles.y*ANGULAR_COEFFICIENT) +
+        (Mathf.Abs(transform.position.z - BrusherStick.position.z ) < BrusherStickSize.size.x*BrusherStickSize.transform.localScale.x*1.3*Math.Sin(BrusherStick.eulerAngles.y*ANGULAR_COEFFICIENT) +
         BrusherStickSize.size.z*BrusherStickSize.transform.localScale.z*Math.Cos(BrusherStick.eulerAngles.y*ANGULAR_COEFFICIENT)/2)) ||
         ((Mathf.Abs(transform.position.x - BrusherActivePart.position.x ) < BrusherActivePartRadius*1.2) &&
             Mathf.Abs(transform.position.z - BrusherActivePart.position.z) < BrusherActivePartRadius*1.2))
