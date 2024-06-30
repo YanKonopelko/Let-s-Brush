@@ -30,6 +30,7 @@ public class UIManager : MonoBehaviour
     {
         Brusher.AnimationNow = false;
         CapsuleManager.Instance.RecalcTargetCapsules();
+        Brusher.isRotate = true;
         CapsuleManager.Instance.isStarted = true;
         _startPanel.SetActive(false);
     }

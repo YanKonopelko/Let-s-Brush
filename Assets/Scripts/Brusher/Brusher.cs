@@ -2,6 +2,9 @@ using System.Collections;
 using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 public class Brusher : MonoBehaviour
 {
@@ -14,11 +17,15 @@ public class Brusher : MonoBehaviour
     // private float AnimationDuration = 0.4f;
     private float AnimationDuration = 0.5f;
 
-    private Vector3 startPosition ;
+    private Vector3 startPosition  = new Vector3(0,1.84f,0);
 
+    public static bool isRotate = false;
 
-    void Awake(){
-        startPosition = transform.position;
+    private BrusherRotation rot;
+
+    private void Awake()
+    {
+        rot = GetComponent<BrusherRotation>();
     }
 
     public void EndAnim()
@@ -112,6 +119,12 @@ public class Brusher : MonoBehaviour
     }
 
     public void Reload(){
+        isRotate = false;
+        rot.Reload();
+        transform.position = startPosition;
+
+        // Task task = Task.Delay(100);
+        // await task;
         _crosses[0].color = new Color(125 / 255f,108 / 255f,109 / 255f);
         _crosses[2].color = new Color(125 / 255f,108 / 255f,109 / 255f);
         _crosses[1].color = new Color(125 / 255f,108 / 255f,109 / 255f);
@@ -119,7 +132,7 @@ public class Brusher : MonoBehaviour
         _crosses[0].gameObject.SetActive(false);
         _crosses[1].gameObject.SetActive(false);
         _crosses[2].gameObject.SetActive(false);
-        transform.position = startPosition;
+        //Debug.Log(transform.position);
     }
     public void ForcedDown(){
         StopAllCoroutines();
