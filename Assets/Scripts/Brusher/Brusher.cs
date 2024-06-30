@@ -100,6 +100,8 @@ public class Brusher : MonoBehaviour
      IEnumerator Anim(bool brusherIsUp)
     {
         yield return new WaitForSeconds(AnimationDuration+0.1f);
+        // if(brusherIsUp)
+        CapsuleManager.Instance.RecalcTargetCapsules();
         AnimationNow = false;
     }
     public void TurnOnCrosses()

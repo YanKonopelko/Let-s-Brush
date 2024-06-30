@@ -39,8 +39,10 @@ public class BrusherRotation : Brusher
             AnimationNow = true;
             isSwitched = true;
             LevelManager.instance.Reload();
+            return;
             // SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
+        CapsuleManager.Instance.RecalcTargetCapsules();
     }
 
     void Update()
@@ -49,6 +51,15 @@ public class BrusherRotation : Brusher
         {
             ChangeDirection();
         }
+        // transform.RotateAround(_rotationObject[0].position, direction * (isSwitched?1:-1), _rotationSpeed * Time.deltaTime);
+    }
+
+    void FixedUpdate()
+    {
+        // if ((Input.GetKeyDown("k") || ( Input.touchCount!=0 && Input.GetTouch(0).phase == TouchPhase.Began)) && !AnimationNow)
+        // {
+        //     ChangeDirection();
+        // }
         transform.RotateAround(_rotationObject[0].position, direction * (isSwitched?1:-1), _rotationSpeed * Time.deltaTime);
     }
 }

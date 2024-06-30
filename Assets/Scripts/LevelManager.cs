@@ -20,6 +20,7 @@ public class LevelManager : MonoBehaviour
 
     public CapsuleManager CapsuleManager;
     public UIManager UIManager;
+    public Pool pool = new Pool();
     // public static UIManager UIManager;
 
     void Awake()
@@ -37,6 +38,11 @@ public class LevelManager : MonoBehaviour
 
         CapsuleManager.Init();
         UIManager.Init();
+        GameObject[] objects = new GameObject[1];
+        objects[0] = CrossPrefab;
+        pool = new Pool();
+        pool.PreparePool(objects,1);
+        pool.GetFromPool(CrossPrefab);
     }
 
     public void SetParams()
