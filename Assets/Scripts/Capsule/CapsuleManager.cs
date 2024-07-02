@@ -52,7 +52,7 @@ public class CapsuleManager : MonoBehaviour
     private int CrossCapsuleNumber = 0;
 
     public bool isStarted = false;
-    public bool isRecalc = false;
+    public static bool isRecalc = false;
 
     public BrusherRotation brusher;
 
@@ -80,7 +80,6 @@ public class CapsuleManager : MonoBehaviour
         startCapsulePos = _allCapsulesTransform[0].position;
 
         CrossCapsuleNumber = UnityEngine.Random.Range(0, transform.childCount - 1);
-        Debug.Log(CrossCapsuleNumber);
 
     }
 
@@ -90,7 +89,6 @@ public class CapsuleManager : MonoBehaviour
         if (!isFinished)
         {
             if (isRecalc) return;
-                Debug.Log(lastBrusherPos);
             for (int i = 0; i < _targetCapsulesTransform.Count; i++)
             {
 
@@ -238,7 +236,6 @@ public class CapsuleManager : MonoBehaviour
             // Debug.Lowg("___________");
             if ((a >= 0 && b >= 0 && c >= 0) || (a <= 0 && b <= 0 && c <= 0) ||  ((Mathf.Abs(transform.position.x - BrusherActivePart.position.x) < BrusherActivePartRadius) && Mathf.Abs(transform.position.z - BrusherActivePart.position.z) < BrusherActivePartRadius))
             {
-                Debug.Log("find");
                 return true;
             }
             else
@@ -278,7 +275,7 @@ public class CapsuleManager : MonoBehaviour
         }
         circleRadius = 1;
         CrossCapsuleNumber = UnityEngine.Random.Range(0, transform.childCount - 1);
-        Debug.Log(CrossCapsuleNumber);
+        lastBrusherPos = brusher._rotationObject[1].position;
         brusher.Reload();
         CrossSpawner.Clear();
         brusher.ForcedDown();
@@ -291,10 +288,10 @@ public class CapsuleManager : MonoBehaviour
         
         isRecalc = true;
         Vector3 pos = new Vector3(brusher._rotationObject[0].position.x, brusher._rotationObject[0].position.y, brusher._rotationObject[0].position.z);
-        float radius = BrusherStick.transform.localScale.z * 0.16f ;
-        // radius = radius*radius;
-        _targetCapsulesTransform.RemoveRange(0, _targetCapsulesTransform.Count);
+        float radius = BrusherStick.transform.localScale.z * 0.3f ;
         Debug.Log(radius);
+                // radius = radius*radius;
+        _targetCapsulesTransform.RemoveRange(0, _targetCapsulesTransform.Count);
         for (int i = 0; i < _allCapsulesTransform.Count; i++)
         {
             Transform capsule = _allCapsulesTransform[i];

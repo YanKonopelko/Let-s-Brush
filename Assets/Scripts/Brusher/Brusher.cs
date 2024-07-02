@@ -119,9 +119,7 @@ public class Brusher : MonoBehaviour
     }
 
     public void Reload(){
-        isRotate = false;
-        rot.Reload();
-        transform.position = startPosition;
+        rot.ReloadRot();
 
         // Task task = Task.Delay(100);
         // await task;
@@ -132,6 +130,8 @@ public class Brusher : MonoBehaviour
         _crosses[0].gameObject.SetActive(false);
         _crosses[1].gameObject.SetActive(false);
         _crosses[2].gameObject.SetActive(false);
+        transform.position = startPosition;
+        
         //Debug.Log(transform.position);
     }
     public void ForcedDown(){

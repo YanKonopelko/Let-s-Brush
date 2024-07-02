@@ -23,7 +23,7 @@ public class BrusherRotation : Brusher
 
     private void ChangeDirection()
     {
-        if(AnimationNow) return;
+        if(AnimationNow || CapsuleManager.isRecalc) return;
         isSwitched = !isSwitched;
 
         SwapPoints();
@@ -49,8 +49,9 @@ public class BrusherRotation : Brusher
 
     }
 
-    public void Reload()
+    public void ReloadRot()
     {
+        isRotate = false;
         _rotationObject[0].localPosition = new Vector3(0, 0, 0);
         _rotationObject[1].localPosition = new Vector3(6.4f, 0, 0);
         isSwitched = true;
@@ -62,11 +63,12 @@ public class BrusherRotation : Brusher
         {
             ChangeDirection();
         }
+        if(isRotate)
+            transform.RotateAround(_rotationObject[0].position, direction * (isSwitched?1:-1), _rotationSpeed * Time.deltaTime);
     }
 
-    void FixedUpdate()
-    {
-        if(isRotate)
-        transform.RotateAround(_rotationObject[0].position, direction * (isSwitched?1:-1), _rotationSpeed * Time.deltaTime);
-    }
+    // void FixedUpdate()
+    // {
+        
+    // }
 }
