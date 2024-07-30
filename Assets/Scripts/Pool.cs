@@ -25,7 +25,7 @@ public class Pool : MonoBehaviour
             freeObjectsArray = new List<GameObject>();
             freeObjects[key] = freeObjectsArray;
             GameObject obj = new GameObject();
-            objectToReturn = Instantiate(key);
+            objectToReturn = Instantiate(key,transform);
             AddToUsingMap(key, objectToReturn);
         }
         else
@@ -54,8 +54,14 @@ public class Pool : MonoBehaviour
 
     private void AddToUsingMap(GameObject key, GameObject Object)
     {
-        List<GameObject> usingObjectsArray = usingObjects[key];
-        if (usingObjectsArray != null)
+        List<GameObject> usingObjectsArray = null;
+        if (usingObjects.ContainsKey(key))
+        {
+            usingObjectsArray = usingObjects[key];
+        }
+
+
+        if (usingObjectsArray == null)
         {
             usingObjectsArray = new List<GameObject>();
             usingObjectsArray.Add(Object);
@@ -106,7 +112,8 @@ public class Pool : MonoBehaviour
             List<GameObject> newArray = new List<GameObject>();
             for (int o = 0; o < countOfObjectsToPrewarm; o++)
             {
-                GameObject newElement = Instantiate(key);
+                GameObject newElement = Instantiate(key,transform);
+                newElement.SetActive(false);
                 newArray.Add(newElement);
             }
             this.freeObjects[key] = newArray;
