@@ -7,7 +7,6 @@ public class BrusherRotation : Brusher
     [SerializeField] private float _rotationSpeed = 175;
     static public bool isSwitched = true;
     private GameObject _camera; 
-    public Transform[] _rotationObject; 
 
     [SerializeField] public Vector2 localPoses;
     private Vector3 direction = Vector3.up;
@@ -67,8 +66,36 @@ public class BrusherRotation : Brusher
             transform.RotateAround(_rotationObject[0].position, direction * (isSwitched?1:-1), _rotationSpeed * Time.deltaTime);
     }
 
-    // void FixedUpdate()
-    // {
-        
-    // }
+    public float Angle { get { return transform.rotation.eulerAngles.y; } }
+    public Vector2 StickSize
+    {
+        get
+        {
+            Vector2 size = new Vector2(brusherSizeScaler.x * stick.localScale.z, brusherSizeScaler.y * stick.localScale.x);
+            return size;
+        }
+    }
+    public Vector3 StickPosition
+    {
+        get
+        {
+            return stick.position;
+        }
+    }
+
+    public float CircleSize
+    {
+        get
+        {
+            return _rotationObject[0].transform.localScale.x * circleSizeScaler;
+        }
+    }
+    public Vector3[] CirclePositions
+    {
+        get
+        {
+            return new Vector3[2] { _rotationObject[0].transform.position, _rotationObject[1].transform.position };
+        }
+    }
+
 }

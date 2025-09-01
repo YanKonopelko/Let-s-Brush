@@ -19,14 +19,8 @@ public class CapsuleManager : MonoBehaviour
     public int _capsulesCounter = 0;
     public int _capsulesAmount = 0;
 
-    [SerializeField] Transform BrusherStick;
-    [SerializeField] Transform BrusherActivePart;
-
 
     public static CapsuleManager Instance;
-    public float triggerDistance = 0.2f;
-    public BoxCollider BrusherStickSize;
-    public float BrusherActivePartRadius;
     public Material TargetColor;
     public Material startCapsuleColor;
     public int[] CapsulePhases;
@@ -37,9 +31,6 @@ public class CapsuleManager : MonoBehaviour
     public float finishCircleGrowSpeed = 10;
     public float capsuleFlightSpeed = 10;
     public float capsuleFlightHight = 3;
-
-
-    private const float ANGULAR_COEFFICIENT = 57.29f;
 
     public bool isFinished = false;
 
@@ -56,7 +47,7 @@ public class CapsuleManager : MonoBehaviour
 
     public BrusherRotation brusher;
 
-    private Vector3 lastBrusherPos = new Vector3(10000,0,10000);
+    private Vector3 lastBrusherPos = new Vector3(10000, 0, 10000);
     public void Init()
     {
         TargetColor = LevelManager.instance.CapsuleMaterials[1];
@@ -82,13 +73,44 @@ public class CapsuleManager : MonoBehaviour
         CrossCapsuleNumber = UnityEngine.Random.Range(0, transform.childCount - 1);
 
     }
-
+    private Square square;
     public void FixedUpdate()
     {
         if (!isStarted) return;
         if (!isFinished)
         {
             if (isRecalc) return;
+            float angle = brusher.Angle * (BrusherRotation.isSwitched ? -1 : -1);
+            var brusherStickSize = brusher.StickSize;
+            float x = -0.5f * brusherStickSize.x;
+            float y = +0.5f * brusherStickSize.y;
+            Vector3 Offset = brusher.StickPosition;
+            Vector2 leftUp = new Vector2((float)(x * Math.Cos(radToAngle * angle) - y * Math.Sin(radToAngle * angle)), (float)(x * Math.Sin(radToAngle * angle) + y * Math.Cos(radToAngle * angle)));
+
+            x = 0.5f * brusherStickSize.x;
+            y = 0.5f * brusherStickSize.y;
+            Vector2 rightUp = new Vector2((float)(x * Math.Cos(radToAngle * angle) - y * Math.Sin(radToAngle * angle)), (float)(x * Math.Sin(radToAngle * angle) + y * Math.Cos(radToAngle * angle)));
+
+            x = -0.5f * brusherStickSize.x;
+            y = -0.5f * brusherStickSize.y;
+            Vector2 leftDown = new Vector2((float)(x * Math.Cos(radToAngle * angle) - y * Math.Sin(radToAngle * angle)), (float)(x * Math.Sin(radToAngle * angle) + y * Math.Cos(radToAngle * angle)));
+
+            x = +0.5f * brusherStickSize.x;
+            y = -0.5f * brusherStickSize.y;
+            Vector2 rightDown = new Vector2((float)(x * Math.Cos(radToAngle * angle) - y * Math.Sin(radToAngle * angle)), (float)(x * Math.Sin(radToAngle * angle) + y * Math.Cos(radToAngle * angle)));
+
+            leftUp += new Vector2(Offset.x, Offset.z);
+            rightUp += new Vector2(Offset.x, Offset.z);
+            leftDown += new Vector2(Offset.x, Offset.z);
+            rightDown += new Vector2(Offset.x, Offset.z);
+            square = new Square(new PointInQuadrilateral.Point(leftUp.x, leftUp.y), new PointInQuadrilateral.Point(rightUp.x, rightUp.y), new PointInQuadrilateral.Point(leftDown.x, leftDown.y), new PointInQuadrilateral.Point(rightDown.x, rightDown.y));
+
+            Debug.DrawLine(new Vector3(leftDown.x, 2, leftDown.y), new Vector3(leftUp.x, 2, leftUp.y));
+            Debug.DrawLine(new Vector3(leftUp.x, 2, leftUp.y), new Vector3(rightUp.x, 2, rightUp.y));
+            Debug.DrawLine(new Vector3(rightUp.x, 2, rightUp.y), new Vector3(rightDown.x, 2, rightDown.y));
+            Debug.DrawLine(new Vector3(rightDown.x, 2, rightDown.y), new Vector3(leftDown.x, 2, leftDown.y));
+            Debug.DrawLine(new Vector3(rightDown.x, 2, rightDown.y), new Vector3(leftDown.x, 2, leftDown.y));
+
             for (int i = 0; i < _targetCapsulesTransform.Count; i++)
             {
 
@@ -96,10 +118,6 @@ public class CapsuleManager : MonoBehaviour
                 {
                     continue;
                 }
-
-                // float angle = BrusherStick.eulerAngles.y * ANGULAR_COEFFICIENT;
-                // float xSize = BrusherStick.transform.localScale.z/1.8f *0.02f;
-                // float zSize = BrusherStick.transform.localScale.y/1.8f *0.02f;
 
                 if (IsNear(_targetCapsulesTransform[i]))
                 {
@@ -145,7 +163,7 @@ public class CapsuleManager : MonoBehaviour
                 }
                 _allCapsulesTransform[i].localScale = scale;
             }
-            lastBrusherPos = brusher._rotationObject[1].position;
+            lastBrusherPos = brusher.CirclePositions[1];
         }
         else
         {
@@ -199,50 +217,30 @@ public class CapsuleManager : MonoBehaviour
             LevelManager.instance.Finish();
         }
     }
-
+    const double radToAngle = Math.PI / 180;
 
     private bool IsNear(Transform transform)
     {
-
-        // if ((Mathf.Abs(transform.position.x - BrusherStick.position.x) < xSize * Math.Cos(angle) + zSize * Math.Sin(angle) &&
-        //  (Mathf.Abs(transform.position.z - BrusherStick.position.z) < xSize * Math.Sin(angle) + zSize * Math.Cos(angle))) ||
-
-        // ((Mathf.Abs(transform.position.x - BrusherActivePart.position.x) < BrusherActivePartRadius) && Mathf.Abs(transform.position.z - BrusherActivePart.position.z) < BrusherActivePartRadius))
-        // {
-        //     return true;
-        // }
         // return false;
-        Vector3 capsulePos = transform.position;
-        Vector3 rotObjPos =  new Vector3(brusher._rotationObject[0].position.x, brusher._rotationObject[0].position.y, brusher._rotationObject[0].position.z);;
-        Vector3 curObjPos =  brusher._rotationObject[1].position;
-        // float a = (rotObjPos.x - capsulePos.x)*(curObjPos.z-rotObjPos.z)-(curObjPos.x-rotObjPos.x)*(rotObjPos.z-capsulePos.z);
-        // float b = (curObjPos.x - capsulePos.x)*(lastBrusherPos.z-curObjPos.z)-(lastBrusherPos.x-curObjPos.x)*(curObjPos.x-capsulePos.x);
-        // float c = (lastBrusherPos.x-capsulePos.x)*(rotObjPos.z-lastBrusherPos.z)-(rotObjPos.x-lastBrusherPos.x)*(lastBrusherPos.z-capsulePos.z);
-
-        // if(Math.Sign(a) == Math.Sign(b) && Math.Sign(b) == Math.Sign(c) ){
-        //     return true;
-        // }
-        // else
-        //     return false;
+        //  if (outPixelPainted[index]) return;
+        bool retVal = false;
+        PointInQuadrilateral.Point capsulePos = new PointInQuadrilateral.Point(transform.position.x, transform.position.z);
 
 
-            // float a = (rotObjPos.x - capsulePos.x) * (curObjPos.z - rotObjPos.z) - (curObjPos.x - rotObjPos.x) * (rotObjPos.z - capsulePos.z);
-            // float b = (curObjPos.x - capsulePos.x) * (lastBrusherPos.z - curObjPos.z) - (lastBrusherPos.x - curObjPos.x) * (curObjPos.z - capsulePos.z);
-            // float c = (lastBrusherPos.x - capsulePos.x) * (rotObjPos.z - lastBrusherPos.z) - (rotObjPos.x - lastBrusherPos.x) * (lastBrusherPos.z - capsulePos.z);
-            float a = (rotObjPos.x - capsulePos.x) * (curObjPos.z - rotObjPos.z) - (curObjPos.x - rotObjPos.x) * (rotObjPos.z - capsulePos.z);
-            float b = (curObjPos.x - capsulePos.x) * (lastBrusherPos.z - curObjPos.z) - (lastBrusherPos.x - curObjPos.x) * (curObjPos.z - capsulePos.z);
-            float c = (lastBrusherPos.x - capsulePos.x) * (rotObjPos.z - lastBrusherPos.z) - (rotObjPos.x - lastBrusherPos.x) * (lastBrusherPos.z - capsulePos.z);
-            
-            // Debug.Lowg("___________");
-            if ((a >= 0 && b >= 0 && c >= 0) || (a <= 0 && b <= 0 && c <= 0) ||  ((Mathf.Abs(transform.position.x - BrusherActivePart.position.x) < BrusherActivePartRadius) && Mathf.Abs(transform.position.z - BrusherActivePart.position.z) < BrusherActivePartRadius))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
 
+        if (PointInQuadrilateral.IsPointInside(square.LD, square.LU, square.RU, square.RD, capsulePos))
+        {
+            return true;
+        }
+        if (PointInQuadrilateral.IsPointInsideCircle(new PointInQuadrilateral.Point(brusher.CirclePositions[0].x, brusher.CirclePositions[0].z), brusher.CircleSize, capsulePos))
+        {
+            return true;
+        }
+        if (PointInQuadrilateral.IsPointInsideCircle(new PointInQuadrilateral.Point(brusher.CirclePositions[1].x, brusher.CirclePositions[1].z), brusher.CircleSize, capsulePos))
+        {
+            return true;
+        }
+        return retVal;
     }
 
     private bool IsNearToCircle(Transform transform, float radius)
@@ -275,7 +273,7 @@ public class CapsuleManager : MonoBehaviour
         }
         circleRadius = 1;
         CrossCapsuleNumber = UnityEngine.Random.Range(0, transform.childCount - 1);
-        lastBrusherPos = brusher._rotationObject[1].position;
+        lastBrusherPos = brusher.CirclePositions[1];
         brusher.Reload();
         CrossSpawner.Clear();
         brusher.ForcedDown();
@@ -285,23 +283,44 @@ public class CapsuleManager : MonoBehaviour
 
     public void RecalcTargetCapsules()
     {
-        
+
         isRecalc = true;
-        Vector3 pos = new Vector3(brusher._rotationObject[0].position.x, brusher._rotationObject[0].position.y, brusher._rotationObject[0].position.z);
-        float radius = BrusherStick.transform.localScale.z * 0.3f ;
+        Vector3 pos = new Vector3(brusher.CirclePositions[0].x, brusher.CirclePositions[0].y, brusher.CirclePositions[0].z);
+        float radius = brusher.transform.localScale.z * 0.3f;
         Debug.Log(radius);
-                // radius = radius*radius;
+        // radius = radius*radius;
         _targetCapsulesTransform.RemoveRange(0, _targetCapsulesTransform.Count);
         for (int i = 0; i < _allCapsulesTransform.Count; i++)
         {
             Transform capsule = _allCapsulesTransform[i];
-            if (Math.Abs(capsule.position.x - pos.x) <= radius && Math.Abs(capsule.position.z - pos.z) <= radius)
-            {
+            // if (Math.Abs(capsule.position.x - pos.x) <= radius && Math.Abs(capsule.position.z - pos.z) <= radius)
+            // {
                 _targetCapsulesTransform.Add(_allCapsulesTransform[i]);
-            }
+            // }
         }
-        if(lastBrusherPos == new Vector3(10000,0,10000))
-            lastBrusherPos = brusher._rotationObject[1].position;
+        if (lastBrusherPos == new Vector3(10000, 0, 10000))
+            lastBrusherPos = brusher.CirclePositions[1];
         isRecalc = false;
+    }
+    
+   private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(brusher.CirclePositions[0], brusher.CircleSize);
+        Gizmos.DrawWireSphere(brusher.CirclePositions[1], brusher.CircleSize);
+
+        // Gizmos.color = Color.green;
+        // int segments = 20;
+        // Vector3 prev = startPos;
+        // for (int i = 1; i <= segments; i++)
+        // {
+        //     float t = i / (float)segments;
+        //     Vector3 point = CalculateBezierPoint(t, startPos, controlPoint, target);
+        //     Gizmos.DrawLine(prev, point);
+        //     prev = point;
+        // }
+
+        // Gizmos.color = Color.yellow;
+        // Gizmos.DrawSphere(controlPoint, 0.2f);
     }
 }
