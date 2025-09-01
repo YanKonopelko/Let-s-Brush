@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -211,9 +212,9 @@ public class CapsuleManager : MonoBehaviour
         if (_capsulesCounter == _capsulesAmount)
         {
             brusher.EndAnim();
-            await Task.Delay(500);
+            await UniTask.Delay(500);
             isFinished = true;
-            await Task.Delay(1300);
+            await UniTask.Delay(1300);
             LevelManager.instance.Finish();
         }
     }
