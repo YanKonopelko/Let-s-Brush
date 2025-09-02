@@ -8248,12 +8248,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 334606444}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 4.7785454, y: 2.2205029, z: 2.3509924}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1701414692}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &343124698
 PrefabInstance:
@@ -9708,9 +9708,9 @@ Light:
   m_CookieSize: 10
   m_Shadows:
     m_Type: 2
-    m_Resolution: -1
+    m_Resolution: 0
     m_CustomResolution: -1
-    m_Strength: 1
+    m_Strength: 0.744
     m_Bias: 0.05
     m_NormalBias: 0.4
     m_NearPlane: 0.2
@@ -41725,7 +41725,8 @@ Transform:
   m_LocalPosition: {x: -4.7785454, y: -2.2205029, z: -2.3509924}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 334606446}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1701431190
@@ -51491,6 +51492,14 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 1442123913}
+    - target: {fileID: 2325209326323318686, guid: d5d044dfb94a7b5409ea1da0252e152e, type: 3}
+      propertyPath: m_UiScaleMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2325209326323318686, guid: d5d044dfb94a7b5409ea1da0252e152e, type: 3}
+      propertyPath: m_MatchWidthOrHeight
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 2325209327002861107, guid: d5d044dfb94a7b5409ea1da0252e152e, type: 3}
       propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
       value: 1801810542
@@ -51746,8 +51755,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stick: {fileID: 5479413116744372051}
   BrusherActivePart: {fileID: 1591852768}
-  circleSizeScaler: 1
-  brusherSizeScaler: {x: 0.03, y: 0.06}
+  circleSizeScaler: 1.2
+  brusherSizeScaler: {x: 0.03, y: 0.1}
   _crosses:
   - {fileID: 1675745631}
   - {fileID: 24578608}
@@ -52115,5 +52124,4 @@ SceneRoots:
   - {fileID: 1701414692}
   - {fileID: 326758029}
   - {fileID: 637731921}
-  - {fileID: 334606446}
   - {fileID: 1635370031}

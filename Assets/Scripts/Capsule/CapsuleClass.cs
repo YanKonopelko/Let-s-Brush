@@ -27,7 +27,7 @@ public class CapsuleClass : MonoBehaviour
         var psComponent = ps.GetComponent<CapsuleParticle>();
         psComponent.Init(ParticleSystemPrefab);
         ps.transform.SetParent(transform);
-        ps.transform.localPosition = new Vector3(0, 1, 0);
+        ps.transform.localPosition = new Vector3(0, 0.5f, 0);
         psComponent.Play();
     
         // ParticleSystem.Play();
