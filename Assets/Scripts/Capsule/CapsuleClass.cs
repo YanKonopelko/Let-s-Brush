@@ -18,13 +18,19 @@ using UnityEngine;
     }
 public class CapsuleClass : MonoBehaviour
 {
-    [SerializeField] private ParticleSystem ParticleSystem;
-    // [SerializeField] private GameObject ParticleSystemPrefab;
+    [SerializeField] private GameObject ParticleSystemPrefab;
     [SerializeField] private AudioSource AudioSource;
 
     public void ParticlePlay()
     {
-        ParticleSystem.Play();
+        var ps = LevelManager.instance.pool.GetFromPool(ParticleSystemPrefab);
+        var psComponent = ps.GetComponent<CapsuleParticle>();
+        psComponent.Init(ParticleSystemPrefab);
+        ps.transform.SetParent(transform);
+        ps.transform.localPosition = new Vector3(0, 1, 0);
+        psComponent.Play();
+    
+        // ParticleSystem.Play();
         // AudioSource.Play();
     }
 

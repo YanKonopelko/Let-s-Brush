@@ -39,8 +39,8 @@ public class LevelManager : MonoBehaviour
         UIManager.Init();
         GameObject[] objects = new GameObject[1];
         objects[0] = CrossPrefab;
-        pool.PreparePool(objects,1);
-        pool.GetFromPool(CrossPrefab);
+        // pool.PreparePool(objects,1);
+        // pool.GetFromPool(CrossPrefab);
     }
 
     public void SetParams()
