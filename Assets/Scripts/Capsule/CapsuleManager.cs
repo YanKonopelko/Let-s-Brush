@@ -49,6 +49,32 @@ public class CapsuleManager : MonoBehaviour
     public BrusherRotation brusher;
 
     private Vector3 lastBrusherPos = new Vector3(10000, 0, 10000);
+    
+    // Optimization: Cache frequently used values
+    private Square _cachedSquare;
+    private Vector2 _cachedLeftUp, _cachedRightUp, _cachedLeftDown, _cachedRightDown;
+    private Vector3 _cachedBrusherOffset;
+    private float _cachedAngle;
+    private Vector2 _cachedBrusherStickSize;
+    private bool _squareNeedsUpdate = true;
+    
+    // Optimization: Cache circle positions and sizes
+    private Vector3 _cachedCirclePos0, _cachedCirclePos1;
+    private float _cachedCircleSize;
+    private bool _circlesNeedUpdate = true;
+    
+    // Optimization: Cache capsule positions for collision detection
+    private Vector2[] _capsulePositions;
+    private bool _capsulePositionsNeedUpdate = true;
+    
+    // Optimization: Reduce update frequency
+    private float _updateTimer = 0f;
+    private const float UPDATE_INTERVAL = 0.016f; // ~60 FPS
+    
+    // Optimization: Pre-calculated constants
+    private const double RAD_TO_ANGLE = Math.PI / 180;
+    private const float HALF = 0.5f;
+    
     public void Init()
     {
         TargetColor = LevelManager.instance.CapsuleMaterials[1];
@@ -60,6 +86,10 @@ public class CapsuleManager : MonoBehaviour
         capsuleRenderers = new MeshRenderer[_capsulesAmount];
         var transforms = new Transform[_capsules.Length];
         CapsulePhases = new int[_capsulesAmount];
+        
+        // Initialize capsule positions cache
+        _capsulePositions = new Vector2[_capsulesAmount];
+        
         for (int i = 0; i < _capsulesAmount; i++)
         {
             isColored[i] = false;
@@ -67,10 +97,13 @@ public class CapsuleManager : MonoBehaviour
             capsuleRenderers[i] = _capsules[i].GetComponent<MeshRenderer>();
             CapsulePhases[i] = 0;
             ColorCapsule(capsuleRenderers[i], startCapsuleColor);
+            
+            // Cache initial capsule positions
+            _capsulePositions[i] = new Vector2(transforms[i].position.x, transforms[i].position.z);
         }
         _allCapsulesTransform = transforms.ToList();
         startCapsulePos = _allCapsulesTransform[0].position;
-
+        _targetCapsulesTransform = _allCapsulesTransform;
         CrossCapsuleNumber = UnityEngine.Random.Range(0, transform.childCount - 1);
 
     }
@@ -78,132 +111,238 @@ public class CapsuleManager : MonoBehaviour
     public void FixedUpdate()
     {
         if (!isStarted) return;
+        
+        // Optimization: Reduce update frequency
+        _updateTimer += Time.fixedDeltaTime;
+        if (_updateTimer < UPDATE_INTERVAL)
+        {
+            // Still update capsule scaling and flight even if collision detection is skipped
+            UpdateCapsuleScaling();
+            if (isFinished)
+            {
+                UpdateFinishAnimation();
+            }
+            return;
+        }
+        _updateTimer = 0f;
+        
         if (!isFinished)
         {
             if (isRecalc) return;
-            float angle = brusher.Angle * (BrusherRotation.isSwitched ? -1 : -1);
-            var brusherStickSize = brusher.StickSize;
-            float x = -0.5f * brusherStickSize.x;
-            float y = +0.5f * brusherStickSize.y;
-            Vector3 Offset = brusher.StickPosition;
-            Vector2 leftUp = new Vector2((float)(x * Math.Cos(radToAngle * angle) - y * Math.Sin(radToAngle * angle)), (float)(x * Math.Sin(radToAngle * angle) + y * Math.Cos(radToAngle * angle)));
-
-            x = 0.5f * brusherStickSize.x;
-            y = 0.5f * brusherStickSize.y;
-            Vector2 rightUp = new Vector2((float)(x * Math.Cos(radToAngle * angle) - y * Math.Sin(radToAngle * angle)), (float)(x * Math.Sin(radToAngle * angle) + y * Math.Cos(radToAngle * angle)));
-
-            x = -0.5f * brusherStickSize.x;
-            y = -0.5f * brusherStickSize.y;
-            Vector2 leftDown = new Vector2((float)(x * Math.Cos(radToAngle * angle) - y * Math.Sin(radToAngle * angle)), (float)(x * Math.Sin(radToAngle * angle) + y * Math.Cos(radToAngle * angle)));
-
-            x = +0.5f * brusherStickSize.x;
-            y = -0.5f * brusherStickSize.y;
-            Vector2 rightDown = new Vector2((float)(x * Math.Cos(radToAngle * angle) - y * Math.Sin(radToAngle * angle)), (float)(x * Math.Sin(radToAngle * angle) + y * Math.Cos(radToAngle * angle)));
-
-            leftUp += new Vector2(Offset.x, Offset.z);
-            rightUp += new Vector2(Offset.x, Offset.z);
-            leftDown += new Vector2(Offset.x, Offset.z);
-            rightDown += new Vector2(Offset.x, Offset.z);
-            square = new Square(new PointInQuadrilateral.Point(leftUp.x, leftUp.y), new PointInQuadrilateral.Point(rightUp.x, rightUp.y), new PointInQuadrilateral.Point(leftDown.x, leftDown.y), new PointInQuadrilateral.Point(rightDown.x, rightDown.y));
-
-            Debug.DrawLine(new Vector3(leftDown.x, 2, leftDown.y), new Vector3(leftUp.x, 2, leftUp.y));
-            Debug.DrawLine(new Vector3(leftUp.x, 2, leftUp.y), new Vector3(rightUp.x, 2, rightUp.y));
-            Debug.DrawLine(new Vector3(rightUp.x, 2, rightUp.y), new Vector3(rightDown.x, 2, rightDown.y));
-            Debug.DrawLine(new Vector3(rightDown.x, 2, rightDown.y), new Vector3(leftDown.x, 2, leftDown.y));
-            Debug.DrawLine(new Vector3(rightDown.x, 2, rightDown.y), new Vector3(leftDown.x, 2, leftDown.y));
-
-            for (int i = 0; i < _targetCapsulesTransform.Count; i++)
+            
+            // Optimization: Only recalculate when brusher has moved significantly
+            if (Vector3.Distance(lastBrusherPos, brusher.CirclePositions[1]) > 0.1f)
             {
-
-                if (CapsulePhases[i] != 0)
-                {
-                    continue;
-                }
-
-                if (IsNear(_targetCapsulesTransform[i]))
-                {
-                    int index = _allCapsulesTransform.IndexOf(_targetCapsulesTransform[i]);
-                    CapsulePhases[index] = 1;
-                }
+                _squareNeedsUpdate = true;
+                _circlesNeedUpdate = true;
+                lastBrusherPos = brusher.CirclePositions[1];
+            }
+            
+            // Optimization: Update collision detection only when needed
+            if (_squareNeedsUpdate || _circlesNeedUpdate)
+            {
+                UpdateCollisionGeometry();
+            }
+            
+            // Optimization: Update capsule positions cache
+            if (_capsulePositionsNeedUpdate)
+            {
+                UpdateCapsulePositions();
             }
 
-            for (int i = 0; i < _allCapsulesTransform.Count; i++)
-            {
-                if (CapsulePhases[i] == 0)
-                {
-                    continue;
-                }
-                if (isColored[i] == false)
-                {
-                    _capsules[i].ParticlePlay();
-                    ColorCapsule(capsuleRenderers[i], TargetColor);
-                    Recalculate();
-                    if (i == CrossCapsuleNumber)
-                    {
-                        CrossSpawner.SpawnCrossesInPos(_allCapsulesTransform[i].transform);
-                    }
-                    isColored[i] = true;
-                }
-                var scale = _allCapsulesTransform[i].localScale;
-                scale.x += Time.deltaTime * capsuleGrowSpeed * (CapsulePhases[i] == 1 ? 1 : -1);
-                scale.y += Time.deltaTime * capsuleGrowSpeed * (CapsulePhases[i] == 1 ? 1 : -1);
-                scale.z += Time.deltaTime * capsuleGrowSpeed * (CapsulePhases[i] == 1 ? 1 : -1);
-                if (scale.x >= 1.5f && CapsulePhases[i] == 1)
-                {
-                    scale.x = 1.5f;
-                    scale.y = 1.5f;
-                    scale.z = 1.5f;
-                    CapsulePhases[i] = 2;
-                }
-                else if (scale.x <= 1 && CapsulePhases[i] == 2)
-                {
-                    scale.x = 1;
-                    scale.y = 1;
-                    scale.z = 1;
-                    CapsulePhases[i] = 0;
-                }
-                _allCapsulesTransform[i].localScale = scale;
-            }
-            lastBrusherPos = brusher.CirclePositions[1];
+            // Optimization: Batch collision detection
+            CheckCollisions();
+
+            UpdateCapsuleScaling();
         }
         else
         {
-            circleRadius += Time.deltaTime * finishCircleGrowSpeed;
-            for (int i = 0; i < _allCapsulesTransform.Count; i++)
+            UpdateFinishAnimation();
+        }
+    }
+    
+    private void UpdateCollisionGeometry()
+    {
+        if (_squareNeedsUpdate)
+        {
+            _cachedAngle = brusher.Angle * (BrusherRotation.isSwitched ? -1 : -1);
+            _cachedBrusherStickSize = new Vector2(brusher.StickSize.x, brusher.StickSize.y);
+            _cachedBrusherOffset = brusher.StickPosition;
+            
+            // Pre-calculate trigonometric values
+            float cosAngle = (float)Math.Cos(RAD_TO_ANGLE * _cachedAngle);
+            float sinAngle = (float)Math.Sin(RAD_TO_ANGLE * _cachedAngle);
+            
+            // Calculate square corners with pre-calculated values
+            float x = -HALF * _cachedBrusherStickSize.x;
+            float y = HALF * _cachedBrusherStickSize.y;
+            _cachedLeftUp = new Vector2(
+                x * cosAngle - y * sinAngle,
+                x * sinAngle + y * cosAngle
+            );
+
+            x = HALF * _cachedBrusherStickSize.x;
+            y = HALF * _cachedBrusherStickSize.y;
+            _cachedRightUp = new Vector2(
+                x * cosAngle - y * sinAngle,
+                x * sinAngle + y * cosAngle
+            );
+
+            x = -HALF * _cachedBrusherStickSize.x;
+            y = -HALF * _cachedBrusherStickSize.y;
+            _cachedLeftDown = new Vector2(
+                x * cosAngle - y * sinAngle,
+                x * sinAngle + y * cosAngle
+            );
+
+            x = HALF * _cachedBrusherStickSize.x;
+            y = -HALF * _cachedBrusherStickSize.y;
+            _cachedRightDown = new Vector2(
+                x * cosAngle - y * sinAngle,
+                x * sinAngle + y * cosAngle
+            );
+
+            // Add offset
+            _cachedLeftUp += new Vector2(_cachedBrusherOffset.x, _cachedBrusherOffset.z);
+            _cachedRightUp += new Vector2(_cachedBrusherOffset.x, _cachedBrusherOffset.z);
+            _cachedLeftDown += new Vector2(_cachedBrusherOffset.x, _cachedBrusherOffset.z);
+            _cachedRightDown += new Vector2(_cachedBrusherOffset.x, _cachedBrusherOffset.z);
+            
+            // Create square only when needed
+            _cachedSquare = new Square(
+                new PointInQuadrilateral.Point(_cachedLeftUp.x, _cachedLeftUp.y),
+                new PointInQuadrilateral.Point(_cachedRightUp.x, _cachedRightUp.y),
+                new PointInQuadrilateral.Point(_cachedLeftDown.x, _cachedLeftDown.y),
+                new PointInQuadrilateral.Point(_cachedRightDown.x, _cachedRightDown.y)
+            );
+            
+            _squareNeedsUpdate = false;
+        }
+        
+        if (_circlesNeedUpdate)
+        {
+            _cachedCirclePos0 = brusher.CirclePositions[0];
+            _cachedCirclePos1 = brusher.CirclePositions[1];
+            _cachedCircleSize = brusher.CircleSize;
+            _circlesNeedUpdate = false;
+        }
+        
+        // Debug drawing (only in editor)
+        #if UNITY_EDITOR
+        Debug.DrawLine(new Vector3(_cachedLeftDown.x, 2, _cachedLeftDown.y), new Vector3(_cachedLeftUp.x, 2, _cachedLeftUp.y));
+        Debug.DrawLine(new Vector3(_cachedLeftUp.x, 2, _cachedLeftUp.y), new Vector3(_cachedRightUp.x, 2, _cachedRightUp.y));
+        Debug.DrawLine(new Vector3(_cachedRightUp.x, 2, _cachedRightUp.y), new Vector3(_cachedRightDown.x, 2, _cachedRightDown.y));
+        Debug.DrawLine(new Vector3(_cachedRightDown.x, 2, _cachedRightDown.y), new Vector3(_cachedLeftDown.x, 2, _cachedLeftDown.y));
+        #endif
+    }
+    
+    private void UpdateCapsulePositions()
+    {
+        // Optimization: Only update positions for capsules that are still in phase 0 (not yet processed)
+        for (int i = 0; i < _allCapsulesTransform.Count; i++)
+        {
+            if (CapsulePhases[i] == 0)
             {
-                _allCapsulesTransform[i].localScale = new Vector3(1, 1, 1);
-                if (CapsulePhases[i] >= 3)
-                {
-                    continue;
-                }
-                if (IsNearToCircle(_allCapsulesTransform[i], circleRadius))
-                {
-                    CapsulePhases[i] = 3;
-                }
+                Vector3 pos = _allCapsulesTransform[i].position;
+                _capsulePositions[i] = new Vector2(pos.x, pos.z);
+            }
+        }
+        _capsulePositionsNeedUpdate = false;
+    }
+    
+    private void CheckCollisions()
+    {
+        for (int i = 0; i < _targetCapsulesTransform.Count; i++)
+        {
+            if (CapsulePhases[i] != 0)
+            {
+                continue;
             }
 
-            for (int i = 0; i < _allCapsulesTransform.Count; i++)
+            if (IsNearOptimized(i))
             {
-                if (CapsulePhases[i] < 3)
+                int index = _allCapsulesTransform.IndexOf(_targetCapsulesTransform[i]);
+                CapsulePhases[index] = 1;
+            }
+        }
+    }
+    
+    private void UpdateCapsuleScaling()
+    {
+        for (int i = 0; i < _allCapsulesTransform.Count; i++)
+        {
+            if (CapsulePhases[i] == 0)
+            {
+                continue;
+            }
+            if (isColored[i] == false)
+            {
+                _capsules[i].ParticlePlay();
+                ColorCapsule(capsuleRenderers[i], TargetColor);
+                Recalculate();
+                if (i == CrossCapsuleNumber)
                 {
-                    continue;
+                    CrossSpawner.SpawnCrossesInPos(_allCapsulesTransform[i].transform);
                 }
-                var position = _allCapsulesTransform[i].position;
-                position.y += Time.deltaTime * capsuleFlightSpeed * (CapsulePhases[i] == 3 ? 1 : -1);
-                if (position.y >= capsuleFlightHight)
-                {
-                    position.y = capsuleFlightHight;
-                    CapsulePhases[i] = 4;
-                }
-                else if (position.y < startCapsulePos.y)
-                {
-                    position.y = startCapsulePos.y;
-                }
-                _allCapsulesTransform[i].position = position;
+                isColored[i] = true;
+            }
+            var scale = _allCapsulesTransform[i].localScale;
+            scale.x += Time.deltaTime * capsuleGrowSpeed * (CapsulePhases[i] == 1 ? 1 : -1);
+            scale.y += Time.deltaTime * capsuleGrowSpeed * (CapsulePhases[i] == 1 ? 1 : -1);
+            scale.z += Time.deltaTime * capsuleGrowSpeed * (CapsulePhases[i] == 1 ? 1 : -1);
+            if (scale.x >= 1.5f && CapsulePhases[i] == 1)
+            {
+                scale.x = 1.5f;
+                scale.y = 1.5f;
+                scale.z = 1.5f;
+                CapsulePhases[i] = 2;
+            }
+            else if (scale.x <= 1 && CapsulePhases[i] == 2)
+            {
+                scale.x = 1;
+                scale.y = 1;
+                scale.z = 1;
+                CapsulePhases[i] = 0;
+            }
+            _allCapsulesTransform[i].localScale = scale;
+        }
+    }
+    
+    private void UpdateFinishAnimation()
+    {
+        circleRadius += Time.deltaTime * finishCircleGrowSpeed;
+        for (int i = 0; i < _allCapsulesTransform.Count; i++)
+        {
+            _allCapsulesTransform[i].localScale = new Vector3(1, 1, 1);
+            if (CapsulePhases[i] >= 3)
+            {
+                continue;
+            }
+            if (IsNearToCircle(_allCapsulesTransform[i], circleRadius))
+            {
+                CapsulePhases[i] = 3;
             }
         }
 
-
+        for (int i = 0; i < _allCapsulesTransform.Count; i++)
+        {
+            if (CapsulePhases[i] < 3)
+            {
+                continue;
+            }
+            var position = _allCapsulesTransform[i].position;
+            position.y += Time.deltaTime * capsuleFlightSpeed * (CapsulePhases[i] == 3 ? 1 : -1);
+            if (position.y >= capsuleFlightHight)
+            {
+                position.y = capsuleFlightHight;
+                CapsulePhases[i] = 4;
+            }
+            else if (position.y < startCapsulePos.y)
+            {
+                position.y = startCapsulePos.y;
+            }
+            _allCapsulesTransform[i].position = position;
+        }
     }
 
     public async void Recalculate()
@@ -218,7 +357,38 @@ public class CapsuleManager : MonoBehaviour
             LevelManager.instance.Finish();
         }
     }
-    const double radToAngle = Math.PI / 180;
+
+    // Optimization: Use cached positions and avoid object creation
+    private bool IsNearOptimized(int capsuleIndex)
+    {
+        Vector2 capsulePos = _capsulePositions[capsuleIndex];
+
+        // Check square collision
+        if (PointInQuadrilateral.IsPointInside(_cachedSquare.LD, _cachedSquare.LU, _cachedSquare.RU, _cachedSquare.RD, 
+            new PointInQuadrilateral.Point(capsulePos.x, capsulePos.y)))
+        {
+            return true;
+        }
+        
+        // Check circle collisions with cached values
+        if (PointInQuadrilateral.IsPointInsideCircle(
+            new PointInQuadrilateral.Point(_cachedCirclePos0.x, _cachedCirclePos0.z), 
+            _cachedCircleSize, 
+            new PointInQuadrilateral.Point(capsulePos.x, capsulePos.y)))
+        {
+            return true;
+        }
+        
+        if (PointInQuadrilateral.IsPointInsideCircle(
+            new PointInQuadrilateral.Point(_cachedCirclePos1.x, _cachedCirclePos1.z), 
+            _cachedCircleSize, 
+            new PointInQuadrilateral.Point(capsulePos.x, capsulePos.y)))
+        {
+            return true;
+        }
+        
+        return false;
+    }
 
     private bool IsNear(Transform transform)
     {
@@ -246,12 +416,13 @@ public class CapsuleManager : MonoBehaviour
 
     private bool IsNearToCircle(Transform transform, float radius)
     {
-
-        if (Math.Sqrt(Math.Pow(endAnimStarter.position.x - transform.position.x, 2) + Math.Pow(endAnimStarter.position.z - transform.position.z, 2)) <= radius)
-        {
-            return true;
-        }
-        return false;
+        // Optimization: Use squared distance to avoid square root calculation
+        float dx = endAnimStarter.position.x - transform.position.x;
+        float dz = endAnimStarter.position.z - transform.position.z;
+        float squaredDistance = dx * dx + dz * dz;
+        float squaredRadius = radius * radius;
+        
+        return squaredDistance <= squaredRadius;
     }
 
 
@@ -279,29 +450,48 @@ public class CapsuleManager : MonoBehaviour
         CrossSpawner.Clear();
         brusher.ForcedDown();
         isFinished = false;
+        
+        // Reset optimization flags
+        _squareNeedsUpdate = true;
+        _circlesNeedUpdate = true;
+        _capsulePositionsNeedUpdate = true;
+        _updateTimer = 0f;
+        
+        // Force update all capsule positions after reload
+        ForceUpdateCapsulePositions();
+        
         RecalcTargetCapsules();
+    }
+    
+    private void ForceUpdateCapsulePositions()
+    {
+        for (int i = 0; i < _allCapsulesTransform.Count; i++)
+        {
+            Vector3 pos = _allCapsulesTransform[i].position;
+            _capsulePositions[i] = new Vector2(pos.x, pos.z);
+        }
     }
 
     public void RecalcTargetCapsules()
     {
 
-        isRecalc = true;
-        Vector3 pos = new Vector3(brusher.CirclePositions[0].x, brusher.CirclePositions[0].y, brusher.CirclePositions[0].z);
-        float radius = brusher.transform.localScale.z * 0.3f;
-        Debug.Log(radius);
-        // radius = radius*radius;
-        _targetCapsulesTransform.RemoveRange(0, _targetCapsulesTransform.Count);
-        for (int i = 0; i < _allCapsulesTransform.Count; i++)
-        {
-            Transform capsule = _allCapsulesTransform[i];
-            // if (Math.Abs(capsule.position.x - pos.x) <= radius && Math.Abs(capsule.position.z - pos.z) <= radius)
-            // {
-                _targetCapsulesTransform.Add(_allCapsulesTransform[i]);
-            // }
-        }
-        if (lastBrusherPos == new Vector3(10000, 0, 10000))
-            lastBrusherPos = brusher.CirclePositions[1];
-        isRecalc = false;
+        // isRecalc = true;
+        // Vector3 pos = new Vector3(brusher.CirclePositions[0].x, brusher.CirclePositions[0].y, brusher.CirclePositions[0].z);
+        // float radius = brusher.transform.localScale.z * 0.3f;
+        // Debug.Log(radius);
+        // // radius = radius*radius;
+        // _targetCapsulesTransform.RemoveRange(0, _targetCapsulesTransform.Count);
+        // for (int i = 0; i < _allCapsulesTransform.Count; i++)
+        // {
+        //     Transform capsule = _allCapsulesTransform[i];
+        //     // if (Math.Abs(capsule.position.x - pos.x) <= radius && Math.Abs(capsule.position.z - pos.z) <= radius)
+        //     // {
+        //         _targetCapsulesTransform.Add(_allCapsulesTransform[i]);
+        //     // }
+        // }
+        // if (lastBrusherPos == new Vector3(10000, 0, 10000))
+        //     lastBrusherPos = brusher.CirclePositions[1];
+        // isRecalc = false;
     }
     
    private void OnDrawGizmosSelected()

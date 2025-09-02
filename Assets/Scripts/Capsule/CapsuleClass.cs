@@ -19,6 +19,7 @@ using UnityEngine;
 public class CapsuleClass : MonoBehaviour
 {
     [SerializeField] private ParticleSystem ParticleSystem;
+    // [SerializeField] private GameObject ParticleSystemPrefab;
     [SerializeField] private AudioSource AudioSource;
 
     public void ParticlePlay()
@@ -39,28 +40,6 @@ public class CapsuleClass : MonoBehaviour
     public PointInQuadrilateral.Point circle2;
     // public float angle;
 
-
-    public void Execute(int index)
-    {
-        if (outPixelPainted[index]) return;
-        PointInQuadrilateral.Point capsulePos = new PointInQuadrilateral.Point(pixelsPositions[index].x, pixelsPositions[index].y);
-
-
-        if (PointInQuadrilateral.IsPointInside(square.LD, square.LU, square.RU, square.RD, capsulePos))
-        {
-            outPixelPainted[index] = true;
-        }
-        if (outPixelPainted[index]) return;
-        if (PointInQuadrilateral.IsPointInsideCircle(circle1, radius, capsulePos))
-        {
-            outPixelPainted[index] = true;
-        }
-        if (outPixelPainted[index]) return;
-        if (PointInQuadrilateral.IsPointInsideCircle(circle2, radius, capsulePos))
-        {
-            outPixelPainted[index] = true;
-        }
-    }
 
 }
 
